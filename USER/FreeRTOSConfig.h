@@ -71,20 +71,19 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
-#include "sys.h"
-#include "usart.h"
 //针对不同的编译器调用不同的stdint.h文件
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
     #include <stdint.h>
     extern uint32_t SystemCoreClock;
 #endif
+#include "stdio.h"
 
 //断言
 #define vAssertCalled(char,int) printf("Error:%s,%d\r\n",char,int)
 #define configASSERT(x) if((x)==0) vAssertCalled(__FILE__,__LINE__)
 
 /***************************************************************************************************************/
-/*                                        FreeRTOS基础配置配置选项                                              */
+/*                                        FreeRTOS基础配置选项                                              */
 /***************************************************************************************************************/
 #define configUSE_PREEMPTION					1                       //1使用抢占式内核，0使用协程
 #define configUSE_TIME_SLICING					1						//1使能时间片调度(默认式使能的)
@@ -182,6 +181,6 @@
 /***************************************************************************************************************/
 #define xPortPendSVHandler 	PendSV_Handler
 #define vPortSVCHandler 	SVC_Handler
-
+#define xPortSysTickHandler SysTick_Handler
 #endif /* FREERTOS_CONFIG_H */
 
