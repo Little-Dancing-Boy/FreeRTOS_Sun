@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\CORE;.\FreeRTOS\include;.\FreeRTOS\portable\RVDS\ARM_CM3;.\FreeRTOS;.\HARDWARE\LED;.\STM32F10x_FWLib\inc;.\USER</IncludePath>
+              <IncludePath>.\CORE;.\FreeRTOS\include;.\FreeRTOS\portable\RVDS\ARM_CM3;.\FreeRTOS;.\HARDWARE\LED;.\STM32F10x_FWLib\inc;.\USER;.\SYSTEM\usart</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -574,6 +574,13 @@
         </Group>
         <Group>
           <GroupName>System</GroupName>
+          <Files>
+            <File>
+              <FileName>usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SYSTEM\usart\usart.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>USER</GroupName>
