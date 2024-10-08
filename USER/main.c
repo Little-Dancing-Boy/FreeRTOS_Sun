@@ -6,38 +6,22 @@
 #include "led.h"
 
 /* 创建任务句柄 */
-static TaskHandle_t AppTaskCreate_Handle;
+static TaskHandle_t AppTaskCreate_Handle = NULL;
 /* LED任务句柄 */
-static TaskHandle_t LED_Task_Handle;
+static TaskHandle_t LED_Task_Handle = NULL;
 
 /**************************** 内核对象句柄 **************************/
-/* 信号量、消息队列、事件标志组、软件定时器都属于内核的对象，要想使用这些内核对象，
-   必须先创建，创建成功之后会返回响应的句柄。这实际上就是一个指针，后续我们就可以
-   通过句柄操作这些内核对象 */
 
 
 /* 空闲任务栈 */
 static StackType_t Idle_Task_Stack[configMINIMAL_STACK_SIZE];
 /* 定时器任务栈 */
 static StackType_t Timer_Task_Stack[configTIMER_TASK_STACK_DEPTH];
-/* AppTaskCreate任务栈 */
-static StackType_t AppTaskCreate_Stack[128];
-/* LED任务栈 */
-static StackType_t LED_Task_Stack[128];
 
 /* 空闲任务控制块 */
 static StaticTask_t Idle_Task_TCB;
 /* 定时器任务控制块 */
 static StaticTask_t Timer_Task_TCB;
-/* AppTaskCreate 任务控制块 */
-static StaticTask_t AppTaskCreate_TCB;
-/* LED_Task 任务控制块 */
-static StaticTask_t LED_Task_TCB;
-
-// #define LED1_TASK_PRIO 3			// 任务优先级
-// #define LED1_STK_SIZE 50			// 任务堆栈大小
-// TaskHandle_t LED1Task_Handler;		// 任务句柄
-// void led1_task(void *pvParameters); // 任务函数
 
 /**
  * *******************************************
@@ -97,21 +81,20 @@ static void LED_Task(void)
 
 static void AppTaskCreate(void)
 {
+	BaseType_t xReturn = pdPASS;		/* 定义一个创建信息返回值，默认为pdPASS */
+
 	taskENTER_CRITICAL();/* 进入临界区 */
 
 	/* 创建LED_Task任务 */
-	LED_Task_Handle = xTaskCreateStatic((TaskFunction_t)LED_Task,
-										(const char *)"LED_Task",
-										(uint32_t)128,
-										(void *)NULL,
-										(UBaseType_t)4,
-										(StackType_t *)LED_Task_Stack,
-										(StaticTask_t *)&LED_Task_TCB);
+	xReturn = xTaskCreate((TaskFunction_t)LED_Task,
+						  (const char *)"LED_Task",
+						  (uint32_t)128,
+						  (void *)NULL,
+						  (UBaseType_t)4,
+						  (TaskHandle_t *)&LED_Task_Handle);
 
-	if(NULL != LED_Task_Handle)	/* 创建成功 */
+	if(pdPASS == xReturn)	/* 创建成功 */
 		printf("LED_Task任务创建成功！\r\n");
-	else
-		printf("LED_Task创建任务失败！\r\n");
 
 	vTaskDelete(AppTaskCreate_Handle);/* 删除AppTaskCreate任务 */
 
@@ -120,21 +103,24 @@ static void AppTaskCreate(void)
 
 int main(void)
 {
+	BaseType_t xReturn = pdPASS;
 	/* 开发板硬件初始化 */
 	BSP_Init();
 	printf("This is a new freertos\r\n");
-	/* 创建AppTaskCreate任务 */
-	AppTaskCreate_Handle = xTaskCreateStatic((TaskFunction_t)AppTaskCreate,
-											 (const char *)"AppTaskCreate",
-											 (uint32_t)128,
-											 (void *)NULL,
-											 (UBaseType_t)3,
-											 (StackType_t *)AppTaskCreate_Stack,
-											 (StaticTask_t *)&AppTaskCreate_TCB);
-	if(NULL != AppTaskCreate_Handle) /* 创建成功 */
+
+	/* 创建动态AppTaskCreate任务 */
+	xReturn = xTaskCreate((TaskFunction_t)AppTaskCreate,
+						  (const char *)"AppTaskCreate",
+						  (uint32_t)128,
+						  (void *)NULL,
+						  (UBaseType_t)3,
+						  (TaskHandle_t *)&AppTaskCreate_Handle);
+	if(xReturn == pdPASS) /* 创建成功 */
 	{
 		vTaskStartScheduler();/* 启动任务，开启调度 */
 	}
+	else
+		return -1;
 
 	while (1)
 		;
