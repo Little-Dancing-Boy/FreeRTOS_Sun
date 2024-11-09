@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\CORE;.\FreeRTOS\include;.\FreeRTOS\portable\RVDS\ARM_CM3;.\FreeRTOS;.\HARDWARE\LED;.\STM32F10x_FWLib\inc;.\USER;.\SYSTEM\usart</IncludePath>
+              <IncludePath>.\CORE;.\FreeRTOS\include;.\FreeRTOS\portable\RVDS\ARM_CM3;.\FreeRTOS;.\HARDWARE\LED;.\STM32F10x_FWLib\inc;.\USER;.\SYSTEM\usart;.\HARDWARE\KEY</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -449,6 +449,11 @@
               <FileName>led.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\HARDWARE\LED\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\KEY\key.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -7,8 +7,10 @@
 
 /* 创建任务句柄 */
 static TaskHandle_t AppTaskCreate_Handle = NULL;
-/* LED任务句柄 */
-static TaskHandle_t LED_Task_Handle = NULL;
+/* LED1任务句柄 */
+static TaskHandle_t LED1_Task_Handle = NULL;
+/* LED2任务句柄 */
+static TaskHandle_t LED2_Task_Handle = NULL;
 
 /**************************** 内核对象句柄 **************************/
 
@@ -69,13 +71,23 @@ static void BSP_Init(void)
 	USART_Config(115200);
 }
 
-static void LED_Task(void)
+static void LED1_Task(void *pvParameters)
 {
 	while(1)
 	{
 		LED0 = ~LED0;
 		vTaskDelay(500);
-		printf("led running, state: %d\r\n", LED0);
+		printf("led1 running, state: %d\r\n", LED0);
+	}
+}
+
+static void LED2_Task(void *pvParameters)
+{
+	while(1)
+	{
+		LED1 = ~LED1;
+		vTaskDelay(1000);
+		printf("led2 running, state: %d\r\n", LED1);
 	}
 }
 
@@ -85,16 +97,27 @@ static void AppTaskCreate(void)
 
 	taskENTER_CRITICAL();/* 进入临界区 */
 
-	/* 创建LED_Task任务 */
-	xReturn = xTaskCreate((TaskFunction_t)LED_Task,
-						  (const char *)"LED_Task",
-						  (uint32_t)128,
+	/* 创建LED1_Task任务 */
+	xReturn = xTaskCreate((TaskFunction_t)LED1_Task,
+						  (const char *)"LED1_Task",
+						  (uint32_t)64,
 						  (void *)NULL,
-						  (UBaseType_t)4,
-						  (TaskHandle_t *)&LED_Task_Handle);
+						  (UBaseType_t)2,
+						  (TaskHandle_t *)&LED1_Task_Handle);
+	
+	if(pdPASS == xReturn)	/* 创建成功 */
+		printf("LED1_Task任务创建成功！\r\n");
+
+	/* 创建LED1_Task任务 */
+	xReturn = xTaskCreate((TaskFunction_t)LED2_Task,
+						  (const char *)"LED2_Task",
+						  (uint32_t)64,
+						  (void *)NULL,
+						  (UBaseType_t)3,
+						  (TaskHandle_t *)&LED2_Task_Handle);
 
 	if(pdPASS == xReturn)	/* 创建成功 */
-		printf("LED_Task任务创建成功！\r\n");
+		printf("LED2_Task任务创建成功！\r\n");
 
 	vTaskDelete(AppTaskCreate_Handle);/* 删除AppTaskCreate任务 */
 
